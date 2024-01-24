@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_list/widgets/group_form/groupa_form_module.dart';
+import 'package:todo_list/UI/widgets/group_form/groupa_form_module.dart';
 
 class GroupFormWidget extends StatefulWidget {
   const GroupFormWidget({super.key});

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todo_list/UI/navigation/main_navigation.dart';
 import 'package:todo_list/domain/entity/group.dart';
 import 'package:todo_list/domain/entity/task.dart';
 
@@ -15,7 +16,7 @@ class GroupsWidgetModel extends ChangeNotifier{
   }
 
   void showForm(BuildContext context){
-    Navigator.of(context).pushNamed('/groups/form');
+    Navigator.of(context).pushNamed(MainNavigationRouteNames.groupsForm);
   }
   void showTasks(BuildContext context, int groupIndex) async {
     if(!Hive.isAdapterRegistered(1)){
@@ -23,7 +24,7 @@ class GroupsWidgetModel extends ChangeNotifier{
     }
     final box = await Hive.openBox<Group>('groups_box');
     final groupKey = box.keyAt(groupIndex) as int;
-    Navigator.of(context).pushNamed('/groups/tasks', arguments: groupKey);
+    Navigator.of(context).pushNamed(MainNavigationRouteNames.tasks, arguments: groupKey);
   }
 
   void deleteGroup(int groupIndex) async{
