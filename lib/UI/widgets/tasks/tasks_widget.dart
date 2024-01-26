@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo_list/UI/widgets/tasks/tasks_widget_model.dart';
 
-class TasksWidget extends StatefulWidget {
+class TaskWidgetConfiguration {
   final int groupKey;
-  const TasksWidget({super.key, required this.groupKey});
+  final String title;
+
+  TaskWidgetConfiguration(this.groupKey, this.title);
+}
+
+// ignore: must_be_immutable
+class TasksWidget extends StatefulWidget {
+  TaskWidgetConfiguration configuration;
+  TasksWidget({super.key, required this.configuration});
 
   @override
   State<TasksWidget> createState() => _TasksWidgetState();
@@ -16,19 +24,22 @@ class _TasksWidgetState extends State<TasksWidget> {
   @override
   void initState() {
     super.initState();
-    _model = TasksWidgetModel(groupKey: widget.groupKey);
+    _model = TasksWidgetModel(configuration: widget.configuration);
   }
 
   @override
   Widget build(BuildContext context) {
     final model = _model;
-    if (model != null) {
-      return TasksWidgetModelProvider(model: model ,child: _TasksWidgetBody());
-    }else{
-      return Center(child: const CircularProgressIndicator());
-    }
+     return TasksWidgetModelProvider(model: model ,child: const _TasksWidgetBody());
+  }
+  @override
+  void dispose() async {
+    _model.dispose();
+    super.dispose();
   }
 }
+
+
 
 class _TasksWidgetBody extends StatelessWidget {
   const _TasksWidgetBody({super.key});
@@ -36,7 +47,7 @@ class _TasksWidgetBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = TasksWidgetModelProvider.watch(context)?.model;
-    final title = model?.group?.name ?? "Task";
+    final title = model?.configuration.title ?? "Task";
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: const _TaskListWidget(),
@@ -77,14 +88,14 @@ class _TaskListRowWidget extends StatelessWidget {
     final model = TasksWidgetModelProvider.read(context)!.model;
     final task = model.tasks[indexInList];
     final icon = task.isDone ? Icons.done : null;
-    final style = task.isDone ? TextStyle(decoration: TextDecoration.lineThrough): null;
+    final style = task.isDone ? const TextStyle(decoration: TextDecoration.lineThrough): null;
     return Slidable(
       endActionPane: ActionPane(motion: const  BehindMotion(), children: [
         SlidableAction(
         onPressed: (context) => model.deleteTask(indexInList),
         icon: Icons.delete,
         label: 'Delete',
-        backgroundColor: Color(0xFFFE4A49),
+        backgroundColor: const Color(0xFFFE4A49),
         foregroundColor: Colors.white,)
       ]),
       child: ListTile(

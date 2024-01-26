@@ -22,7 +22,7 @@ class _TaskFormWidgetState extends State<TaskFormWidget> {
   Widget build(BuildContext context) {
     return TaskFormWidgetModelProvider(
       model: _model,
-      child: _TextFormWidgetBody(),);
+      child: const _TextFormWidgetBody(),);
   }
 }
 class _TextFormWidgetBody extends StatelessWidget {

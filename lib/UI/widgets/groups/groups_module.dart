@@ -1,14 +1,17 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_list/UI/navigation/main_navigation.dart';
+import 'package:todo_list/UI/widgets/tasks/tasks_widget.dart';
 import 'package:todo_list/domain/data_provider/box_manager.dart';
 import 'package:todo_list/domain/entity/group.dart';
 
 class GroupsWidgetModel extends ChangeNotifier{
   late final Future<Box<Group>> _box;
   var _groups = <Group>[];
+  ValueListenable<Object>? _listenableBox;
 
   List<Group> get groups => _groups.toList();
   
@@ -21,8 +24,17 @@ class GroupsWidgetModel extends ChangeNotifier{
   }
 
   Future<void> showTasks(BuildContext context, int groupIndex) async {
-    final groupKey = (await _box).keyAt(groupIndex) as int;
-    unawaited(Navigator.of(context).pushNamed(MainNavigationRouteNames.tasks, arguments: groupKey));
+    final group = (await _box).getAt(groupIndex);
+    if(group != null){
+    final configuration = TaskWidgetConfiguration(
+      group.key as int, group.name);
+    unawaited(
+      Navigator.of(context)
+      .pushNamed(
+        MainNavigationRouteNames.tasks, 
+        arguments: configuration
+        ));
+    }
   }
 
   Future<void> deleteGroup(int groupIndex) async{
@@ -41,7 +53,15 @@ class GroupsWidgetModel extends ChangeNotifier{
   void _setup() async{
     _box = BoxManager.instance.openGroupBox();
     await _readGroupFromHive();
-    (await _box).listenable().addListener(_readGroupFromHive);
+    _listenableBox = (await _box).listenable();
+    _listenableBox?.addListener(_readGroupFromHive);
+  }
+
+  @override
+  Future<void> dispose() async {
+    _listenableBox?.removeListener(_readGroupFromHive);
+    await BoxManager.instance.closeBox((await _box));
+    super.dispose();
   }
 }
 

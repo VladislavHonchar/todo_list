@@ -10,13 +10,18 @@ class GroupsWidget extends StatefulWidget {
 }
 
 class _GroupsWidgetState extends State<GroupsWidget> {
-  final model = GroupsWidgetModel();
+  final _model = GroupsWidgetModel();
 
   @override
   Widget build(BuildContext context) {
     return GroupsWidgetModelProvider(
-      model: model,
+      model: _model,
       child: const _GroupWidgetBody());
+  }
+  @override
+  void dispose() async {
+    _model.dispose();
+    super.dispose();
   }
 }
 
@@ -28,7 +33,7 @@ class _GroupWidgetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Group'),
+        title: const Text('Group'),
       ),
       body: const  _GroupListWidget(),
       floatingActionButton: FloatingActionButton(
@@ -74,7 +79,7 @@ class _GroupListRowWidget extends StatelessWidget {
         onPressed: (context) => model.deleteGroup(indexInList),
         icon: Icons.delete,
         label: 'Delete',
-        backgroundColor: Color(0xFFFE4A49),
+        backgroundColor: const Color(0xFFFE4A49),
         foregroundColor: Colors.white,)
       ]),
       child: ListTile(
