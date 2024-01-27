@@ -30,23 +30,26 @@ class _TextFormWidgetBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = TaskFormWidgetModelProvider.watch(context)?.model;
+    final actionButton = FloatingActionButton(
+      onPressed: () => model?.saveTasks(context),
+      child: const Icon(Icons.done)
+    );
     return Scaffold(
       appBar: AppBar(title: const Text("New Task"),),
       body: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: const _TaskTextWidget(),
-        )
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => TaskFormWidgetModelProvider.read(context)?.model.saveTasks(context),
-          child: const Icon(Icons.done),
-          ),
+      ),
+      floatingActionButton: model?.isValid == true ? actionButton : null,
     );
   }
 }
 
 class _TaskTextWidget extends StatelessWidget {
+  
   const _TaskTextWidget({super.key});
 
   @override
@@ -59,7 +62,7 @@ class _TaskTextWidget extends StatelessWidget {
       expands: true,
       decoration: const InputDecoration(
         border: InputBorder.none,
-        hintText: 'Group name'
+        hintText: 'Task text'
       ),
       onChanged: (value) => model?.taskText = value,
       onEditingComplete: () => model?.saveTasks(context),
